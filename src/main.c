@@ -5,7 +5,7 @@
 
 void main (void)
 {
-    DDRB |= (_BV(DDB5)) | (_BV(DDB4)) | (_BV(DDB6));
+    DDRB |= (_BV(DDB5)) | (_BV(DDB4));
 
     while (1) {
         PORTB |= _BV(PORTB5);
