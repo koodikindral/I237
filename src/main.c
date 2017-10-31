@@ -11,7 +11,8 @@ void blink (int port)
     _delay_ms(BLINK_DELAY_MS);
 }
 
-void main (void)  {
+void main (void)
+{
     DDRB |= _BV(DDB7);
     DDRA |= (_BV(DDA0)) | (_BV(DDA2)) | (_BV(DDA4));
     PORTB &= ~_BV(PORTB7);
