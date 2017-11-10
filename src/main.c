@@ -3,7 +3,7 @@
 
 #define BLINK_DELAY_MS 500
 
-void blink (int port)
+void blink (unsigned int port)
 {
     PORTA |= port;
     _delay_ms(BLINK_DELAY_MS);
