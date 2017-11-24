@@ -31,11 +31,9 @@ void main (void)
     DDRB |= _BV(DDB7);
     DDRA |= (_BV(DDA0)) | (_BV(DDA2)) | (_BV(DDA4));
     PORTB &= ~_BV(PORTB7);
-
     lcd_init();
     lcd_home();
     init_errcon();
-
     /* Assert test */
     char *array;
     uint32_t i = 1;
@@ -49,15 +47,12 @@ void main (void)
         lcd_clrscr();
         lcd_puts("Roheline");
         blink(_BV(PORTA0));
-
         lcd_clrscr();
         lcd_puts("Punane");
         blink(_BV(PORTA2));
-
         lcd_clrscr();
         lcd_puts("Sinine");
         blink(_BV(PORTA4));
-
         /* Assert test */
         array = realloc( array, (i++ * 100) * sizeof(char));
         fprintf(stderr, "%d\n",

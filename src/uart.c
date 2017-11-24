@@ -41,8 +41,7 @@ int simple_uart0_putchar(char c, FILE *stream)
 {
     (void) stream;
 
-    if (c == '\n')
-    {
+    if (c == '\n') {
         simple_uart0_putchar('\r', stream);
     }
 
@@ -54,8 +53,7 @@ int simple_uart1_putchar(char c, FILE *stream)
 {
     (void) stream;
 
-    if (c == '\n')
-    {
+    if (c == '\n') {
         simple_uart1_putchar('\r', stream);
     }
 
