@@ -34,14 +34,6 @@ void main (void)
     lcd_init();
     lcd_home();
     init_errcon();
-    /* Assert test */
-    char *array;
-    uint32_t i = 1;
-    extern int __heap_start, *__brkval;
-    int v;
-    array = malloc( i * sizeof(char));
-    assert(array);
-    /* End assert test */
 
     while (1) {
         lcd_clrscr();
@@ -53,11 +45,5 @@ void main (void)
         lcd_clrscr();
         lcd_puts("Sinine");
         blink(_BV(PORTA4));
-        /* Assert test */
-        array = realloc( array, (i++ * 100) * sizeof(char));
-        fprintf(stderr, "%d\n",
-                (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval));
-        assert(array);
-        /* End assert test */
     }
 }
