@@ -7,8 +7,10 @@
 #include <util/delay.h>
 #include "../lib/hd44780_111/hd44780.h"
 #include "uart.h"
+#include "hmi_msg.h"
+#include "print_helper.h"
 
-void blink (unsigned int port)
+void blink(unsigned int port)
 {
     PORTA |= port;
     _delay_ms(BLINK_DELAY_MS);
@@ -16,34 +18,60 @@ void blink (unsigned int port)
     _delay_ms(BLINK_DELAY_MS);
 }
 
-static inline void init_errcon(void)
+
+static inline void init_connection(void)
 {
-    simple_uart1_init();
-    stderr = &simple_uart1_out;
-    fprintf(stderr, "Version: %s built on: %s %s\n",
-            FW_VERSION, __DATE__, __TIME__);
-    fprintf(stderr, "avr-libc version: %s avr-gcc version: %s\n",
-            __AVR_LIBC_VERSION_STRING__, __VERSION__);
+    simple_uart0_init();
+    stdin = stdout = &simple_uart0_io;
+    fprintf_P(stdout, PROG_VER, FW_VERSION, __DATE__, __TIME__);
+    fprintf_P(stdout, LIBC_VER, __AVR_LIBC_VERSION_STRING__, __VERSION__);
+    fprintf(stdout, "\n");
+    fprintf_P(stdout, STUDENT_NAME);
+    fprintf(stdout, "\n");
 }
 
-void main (void)
+void init_leds()
 {
     DDRB |= _BV(DDB7);
     DDRA |= (_BV(DDA0)) | (_BV(DDA2)) | (_BV(DDA4));
     PORTB &= ~_BV(PORTB7);
+}
+
+
+void main(void)
+{
+    init_connection();
+    init_leds();
     lcd_init();
     lcd_home();
-    init_errcon();
+    lcd_puts_P(STUDENT_NAME);
+    unsigned char a[128];
+
+    for (unsigned char i = 0; i < sizeof(a); i++) {
+        a[i] = i;
+    }
+
+    fprintf(stdout, "\n");
+    print_ascii_tbl(stdout);
+    fprintf(stdout, "\n");
+    print_for_human(stdout, a, sizeof(a) - 1);
 
     while (1) {
-        lcd_clrscr();
-        lcd_puts("Roheline");
+        char input[20];
+        fprintf_P(stdout, ENTER_NUMBER);
+        scanf("%s", input);
+        fprintf(stdout, input);
+        int number = atoi(input);
+
+        if (number >= 0 && number < 10) {
+            fprintf_P(stdout, ENTERED_NUMBER);
+            fprintf_P(stdout, NUMBERS[number]);
+        } else {
+            fprintf_P(stdout, WRONG_NUMBER);
+        }
+
         blink(_BV(PORTA0));
-        lcd_clrscr();
-        lcd_puts("Punane");
         blink(_BV(PORTA2));
-        lcd_clrscr();
-        lcd_puts("Sinine");
         blink(_BV(PORTA4));
     }
 }
