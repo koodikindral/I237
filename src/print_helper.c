@@ -1,34 +1,34 @@
 #include <stdio.h>
 #include "print_helper.h"
+#include <avr/pgmspace.h>
+#include "../lib/andygock_avr-uart/uart.h"
 
-int print_ascii_tbl(FILE *stream)
+void print_ascii_tbl(void)
 {
-    for (int i = 33; i < 127; i++) {
-        if (!fprintf(stream, "%c ", i)) {
-            return 0;
-        }
+    for (char c = ' '; c <= '~'; c++)    {
+        uart0_putc(c);
     }
 
-    return fprintf(stream, "\n");
+    uart0_puts_p(PSTR("\r\n"));
 }
 
 
-int print_for_human(FILE *stream, const unsigned char *a, const size_t len)
+void print_for_human(const unsigned char *array,
+                     const size_t len)
 {
-    if (len > 1) {
-        for (unsigned int i = 0; i <= len; i++) {
-            if (a[i] > 32 && a[i] < 127) {
-                if (!fprintf(stream, "%c", a[i])) {
-                    return 0;
-                }
-            } else {
-                if (!fprintf(stream, "\"0x%02X\"", a[i])) {
-                    return 0;
-                }
-            }
+    for (size_t i = 0; i < len; i++)    {
+        if (array[i] >= ' ' && array[i] <= '~')    {
+            uart0_putc(array[i]);
+        }    else {
+            uart0_puts_p(PSTR("\"0x"));
+            uart0_putc((array[i] >> 4) + ((array[i] >> 4) <= 9 ?
+                                          0x30 : 0x37));
+            uart0_putc((array[i] & 0x0F) + ((array[i] & 0x0F) <= 9
+                                            ? 0x30 : 0x37));
+            uart0_putc('"');
         }
     }
 
-    return fprintf(stream, "\n");
+    uart0_puts_p(PSTR("\r\n"));
 }
 
